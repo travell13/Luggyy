@@ -113,14 +113,26 @@ export default function Navbar({ isBannerVisible = true }: NavbarProps) {
             </button>
           </div>
 
-          {/* Mobile Menu Button */}
-          <button
-            className="md:hidden flex items-center justify-center mr-2 p-2 rounded-md hover:bg-white/10 transition-colors"
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
-          >
-            {mobileMenuOpen ? <X className="h-6 w-6 text-white" /> : <Menu className="h-6 w-6 text-white" />}
-          </button>
+          {/* Mobile Actions */}
+          <div className="md:hidden flex items-center gap-3 mr-2">
+            <button
+              onClick={toggleLanguage}
+              className="text-white/80 hover:text-white transition-colors text-xs font-bold px-2 py-1 rounded-md border border-white/20 hover:border-white/40"
+              style={{
+                fontFamily:
+                  'GeistMono, ui-monospace, SFMono-Regular, "Roboto Mono", Menlo, Monaco, "Liberation Mono", "DejaVu Sans Mono", "Courier New", monospace',
+              }}
+            >
+              {language === "en" ? "KR" : "EN"}
+            </button>
+            <button
+              className="flex items-center justify-center p-2 rounded-md hover:bg-white/10 transition-colors"
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
+            >
+              {mobileMenuOpen ? <X className="h-6 w-6 text-white" /> : <Menu className="h-6 w-6 text-white" />}
+            </button>
+          </div>
         </nav>
 
         {/* Mobile Menu Overlay */}
@@ -129,9 +141,8 @@ export default function Navbar({ isBannerVisible = true }: NavbarProps) {
         )}
 
         <div
-          className={`fixed top-[76px] right-6 w-[calc(100%-48px)] max-w-[400px] bg-black/30 backdrop-blur-xl border border-white/20 rounded-[16px] shadow-2xl z-50 transform transition-transform duration-300 ease-in-out ${
-            mobileMenuOpen ? "translate-y-0 opacity-100" : "translate-y-[-20px] opacity-0 pointer-events-none"
-          }`}
+          className={`fixed top-[76px] right-6 w-[calc(100%-48px)] max-w-[400px] bg-black/30 backdrop-blur-xl border border-white/20 rounded-[16px] shadow-2xl z-50 transform transition-transform duration-300 ease-in-out ${mobileMenuOpen ? "translate-y-0 opacity-100" : "translate-y-[-20px] opacity-0 pointer-events-none"
+            }`}
           style={{
             backdropFilter: "blur(20px) saturate(180%)",
             WebkitBackdropFilter: "blur(20px) saturate(180%)",
@@ -167,16 +178,6 @@ export default function Navbar({ isBannerVisible = true }: NavbarProps) {
               }}
             >
               {t("nav.contact")}
-            </button>
-            <button
-              onClick={toggleLanguage}
-              className="text-white/80 hover:text-white transition-colors text-left py-3 px-4 rounded-lg hover:bg-white/5 border border-white/20"
-              style={{
-                fontFamily:
-                  'GeistMono, ui-monospace, SFMono-Regular, "Roboto Mono", Menlo, Monaco, "Liberation Mono", "DejaVu Sans Mono", "Courier New", monospace',
-              }}
-            >
-              {language === "en" ? "한국어 (KR)" : "English (EN)"}
             </button>
           </div>
         </div>
