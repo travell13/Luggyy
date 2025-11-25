@@ -3,6 +3,7 @@ import "./globals.css"
 import type { Metadata } from "next"
 import { ThemeProvider } from "@/components/theme-provider"
 import { GeistSans } from "geist/font/sans"
+import { GeistMono } from "geist/font/mono"
 import { Noto_Sans_KR } from "next/font/google"
 import { LanguageProvider } from "@/contexts/language-context"
 
@@ -37,7 +38,7 @@ export const metadata: Metadata = {
     type: "website",
     locale: "en_US",
     url: "https://luggy.app",
-    siteName: "Luggy",
+    siteName: "Luggy - Luggage Storage",
     title: "Luggy",
     description:
       "Find verified storage hosts within 500m of campus. Secure booking with escrow payment and KYC verification. Starting at 30,000 KRW/month.",
@@ -90,7 +91,7 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en" className={`${GeistSans.className} ${notoSansKR.variable} antialiased`} suppressHydrationWarning>
+    <html lang="en" className={`${GeistSans.variable} ${GeistMono.variable} ${notoSansKR.variable} font-geist antialiased`} suppressHydrationWarning>
       <head>
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@geist-ui/core@latest/dist/geist-ui.css" />
         {/* Preconnect to external domains */}
@@ -233,7 +234,7 @@ export default function RootLayout({
         />
       </head>
       <body>
-        <ThemeProvider attribute="class" defaultTheme="dark">
+        <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
           <LanguageProvider>{children}</LanguageProvider>
         </ThemeProvider>
       </body>

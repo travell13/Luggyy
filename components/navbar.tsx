@@ -2,6 +2,7 @@
 import { useState, useEffect, useCallback } from "react"
 import { Menu, X } from "lucide-react"
 import { useLanguage } from "@/contexts/language-context"
+import { useTheme } from "next-themes"
 
 interface NavbarProps {
   isBannerVisible?: boolean
@@ -11,6 +12,7 @@ export default function Navbar({ isBannerVisible = true }: NavbarProps) {
   const [scrolled, setScrolled] = useState(false)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const { language, toggleLanguage, t } = useLanguage()
+  const { theme } = useTheme()
 
   const handleScroll = useCallback(() => {
     const isScrolled = window.scrollY > 10
@@ -40,12 +42,16 @@ export default function Navbar({ isBannerVisible = true }: NavbarProps) {
 
   const navStyle = {
     boxShadow: scrolled ? "0 0 0 0 rgba(0,0,0,0), 0 0 0 0 rgba(0,0,0,0), 0 8px 32px 0 rgba(0, 0, 0, 0.37)" : "none",
-    border: scrolled ? "1px solid rgba(255, 255, 255, 0.18)" : "1px solid transparent",
+    border: scrolled
+      ? theme === "dark"
+        ? "1px solid rgba(255, 255, 255, 0.12)"
+        : "1px solid rgba(0, 0, 0, 0.08)"
+      : "1px solid transparent",
     borderRadius: "16px",
     transition: "all 0.3s ease-in-out",
-    backgroundColor: scrolled ? "rgba(0, 0, 0, 0.4)" : "rgb(0, 0, 0)",
-    backdropFilter: scrolled ? "blur(20px) saturate(180%)" : "none",
-    WebkitBackdropFilter: scrolled ? "blur(20px) saturate(180%)" : "none",
+    backgroundColor: scrolled ? (theme === "dark" ? "rgba(0, 0, 0, 0.25)" : "rgba(255, 255, 255, 0.5)") : "transparent",
+    backdropFilter: scrolled ? "blur(32px) saturate(200%)" : "none",
+    WebkitBackdropFilter: scrolled ? "blur(32px) saturate(200%)" : "none",
   }
 
   const scrollToSection = (sectionId: string) => {
@@ -62,18 +68,20 @@ export default function Navbar({ isBannerVisible = true }: NavbarProps) {
     >
       <div className="w-[calc(100%-24px)] max-w-[1400px] mt-2">
         <nav
-          className="flex items-center justify-between p-2 h-16 rounded-[16px] text-white font-geist"
+          className={`flex items-center justify-between p-2 h-16 rounded-[16px] font-geist ${theme === "dark" ? "text-white" : "text-black"}`}
           style={navStyle}
         >
           <div className="flex items-center ml-[15px]">
-            <span className="text-white font-geist font-bold text-lg">Luggy</span>
+            <span className={`font-geist font-bold text-lg ${theme === "dark" ? "text-white" : "text-black"}`}>
+              Luggy
+            </span>
           </div>
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center gap-8 mr-4">
             <button
               onClick={() => scrollToSection("how-it-works")}
-              className="text-white/80 hover:text-white transition-colors text-sm font-medium"
+              className={`${theme === "dark" ? "text-white/80 hover:text-white" : "text-black/80 hover:text-black"} transition-colors text-sm font-medium`}
               style={{
                 fontFamily:
                   'GeistMono, ui-monospace, SFMono-Regular, "Roboto Mono", Menlo, Monaco, "Liberation Mono", "DejaVu Sans Mono", "Courier New", monospace',
@@ -83,7 +91,7 @@ export default function Navbar({ isBannerVisible = true }: NavbarProps) {
             </button>
             <button
               onClick={() => scrollToSection("faq")}
-              className="text-white/80 hover:text-white transition-colors text-sm font-medium"
+              className={`${theme === "dark" ? "text-white/80 hover:text-white" : "text-black/80 hover:text-black"} transition-colors text-sm font-medium`}
               style={{
                 fontFamily:
                   'GeistMono, ui-monospace, SFMono-Regular, "Roboto Mono", Menlo, Monaco, "Liberation Mono", "DejaVu Sans Mono", "Courier New", monospace',
@@ -93,7 +101,7 @@ export default function Navbar({ isBannerVisible = true }: NavbarProps) {
             </button>
             <button
               onClick={() => scrollToSection("contact")}
-              className="text-white/80 hover:text-white transition-colors text-sm font-medium"
+              className={`${theme === "dark" ? "text-white/80 hover:text-white" : "text-black/80 hover:text-black"} transition-colors text-sm font-medium`}
               style={{
                 fontFamily:
                   'GeistMono, ui-monospace, SFMono-Regular, "Roboto Mono", Menlo, Monaco, "Liberation Mono", "DejaVu Sans Mono", "Courier New", monospace',
@@ -103,7 +111,7 @@ export default function Navbar({ isBannerVisible = true }: NavbarProps) {
             </button>
             <button
               onClick={toggleLanguage}
-              className="text-white/80 hover:text-white transition-colors text-sm font-bold px-3 py-1 rounded-md border border-white/20 hover:border-white/40"
+              className={`${theme === "dark" ? "text-white/80 hover:text-white hover:bg-white/5 border-white/20" : "text-black/80 hover:text-black hover:bg-black/5 border-black/20"} transition-colors text-sm font-bold px-3 py-1 rounded-md border`}
               style={{
                 fontFamily:
                   'GeistMono, ui-monospace, SFMono-Regular, "Roboto Mono", Menlo, Monaco, "Liberation Mono", "DejaVu Sans Mono", "Courier New", monospace',
@@ -117,7 +125,7 @@ export default function Navbar({ isBannerVisible = true }: NavbarProps) {
           <div className="md:hidden flex items-center gap-3 mr-2">
             <button
               onClick={toggleLanguage}
-              className="text-white/80 hover:text-white transition-colors text-xs font-bold px-2 py-1 rounded-md border border-white/20 hover:border-white/40"
+              className={`${theme === "dark" ? "text-white/80 hover:text-white hover:bg-white/5 border-white/20" : "text-black/80 hover:text-black hover:bg-black/5 border-black/20"} transition-colors text-xs font-bold px-2 py-1 rounded-md border`}
               style={{
                 fontFamily:
                   'GeistMono, ui-monospace, SFMono-Regular, "Roboto Mono", Menlo, Monaco, "Liberation Mono", "DejaVu Sans Mono", "Courier New", monospace',
@@ -126,11 +134,15 @@ export default function Navbar({ isBannerVisible = true }: NavbarProps) {
               {language === "en" ? "KR" : "EN"}
             </button>
             <button
-              className="flex items-center justify-center p-2 rounded-md hover:bg-white/10 transition-colors"
+              className={`flex items-center justify-center p-2 rounded-md ${theme === "dark" ? "hover:bg-white/10" : "hover:bg-black/10"} transition-colors`}
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
             >
-              {mobileMenuOpen ? <X className="h-6 w-6 text-white" /> : <Menu className="h-6 w-6 text-white" />}
+              {mobileMenuOpen ? (
+                <X className={`h-6 w-6 ${theme === "dark" ? "text-white" : "text-black"}`} />
+              ) : (
+                <Menu className={`h-6 w-6 ${theme === "dark" ? "text-white" : "text-black"}`} />
+              )}
             </button>
           </div>
         </nav>
@@ -141,17 +153,17 @@ export default function Navbar({ isBannerVisible = true }: NavbarProps) {
         )}
 
         <div
-          className={`fixed top-[76px] right-6 w-[calc(100%-48px)] max-w-[400px] bg-black/30 backdrop-blur-xl border border-white/20 rounded-[16px] shadow-2xl z-50 transform transition-transform duration-300 ease-in-out ${mobileMenuOpen ? "translate-y-0 opacity-100" : "translate-y-[-20px] opacity-0 pointer-events-none"
+          className={`fixed top-[76px] right-6 w-[calc(100%-48px)] max-w-[400px] ${theme === "dark" ? "bg-black/20" : "bg-white/60"} backdrop-blur-xl border ${theme === "dark" ? "border-white/15" : "border-black/8"} rounded-[16px] shadow-2xl z-50 transform transition-transform duration-300 ease-in-out ${mobileMenuOpen ? "translate-y-0 opacity-100" : "translate-y-[-20px] opacity-0 pointer-events-none"
             }`}
           style={{
-            backdropFilter: "blur(20px) saturate(180%)",
-            WebkitBackdropFilter: "blur(20px) saturate(180%)",
+            backdropFilter: "blur(32px) saturate(200%)",
+            WebkitBackdropFilter: "blur(32px) saturate(200%)",
           }}
         >
           <div className="p-4 flex flex-col gap-4">
             <button
               onClick={() => scrollToSection("how-it-works")}
-              className="text-white/80 hover:text-white transition-colors text-left py-3 px-4 rounded-lg hover:bg-white/5"
+              className={`${theme === "dark" ? "text-white/80 hover:text-white hover:bg-white/5" : "text-black/80 hover:text-black hover:bg-black/5"} transition-colors text-left py-3 px-4 rounded-lg`}
               style={{
                 fontFamily:
                   'GeistMono, ui-monospace, SFMono-Regular, "Roboto Mono", Menlo, Monaco, "Liberation Mono", "DejaVu Sans Mono", "Courier New", monospace',
@@ -161,7 +173,7 @@ export default function Navbar({ isBannerVisible = true }: NavbarProps) {
             </button>
             <button
               onClick={() => scrollToSection("faq")}
-              className="text-white/80 hover:text-white transition-colors text-left py-3 px-4 rounded-lg hover:bg-white/5"
+              className={`${theme === "dark" ? "text-white/80 hover:text-white hover:bg-white/5" : "text-black/80 hover:text-black hover:bg-black/5"} transition-colors text-left py-3 px-4 rounded-lg`}
               style={{
                 fontFamily:
                   'GeistMono, ui-monospace, SFMono-Regular, "Roboto Mono", Menlo, Monaco, "Liberation Mono", "DejaVu Sans Mono", "Courier New", monospace',
@@ -171,7 +183,7 @@ export default function Navbar({ isBannerVisible = true }: NavbarProps) {
             </button>
             <button
               onClick={() => scrollToSection("contact")}
-              className="text-white/80 hover:text-white transition-colors text-left py-3 px-4 rounded-lg hover:bg-white/5"
+              className={`${theme === "dark" ? "text-white/80 hover:text-white hover:bg-white/5" : "text-black/80 hover:text-black hover:bg-black/5"} transition-colors text-left py-3 px-4 rounded-lg`}
               style={{
                 fontFamily:
                   'GeistMono, ui-monospace, SFMono-Regular, "Roboto Mono", Menlo, Monaco, "Liberation Mono", "DejaVu Sans Mono", "Courier New", monospace',
@@ -179,6 +191,7 @@ export default function Navbar({ isBannerVisible = true }: NavbarProps) {
             >
               {t("nav.contact")}
             </button>
+
           </div>
         </div>
       </div>
