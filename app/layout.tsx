@@ -37,8 +37,8 @@ export const metadata: Metadata = {
     type: "website",
     locale: "en_US",
     url: "https://luggy.app",
-    siteName: "Luggy - Luggage Storage",
-    title: "Luggy – Store Your Luggage Near Campus",
+    siteName: "Luggy",
+    title: "Luggy",
     description:
       "Find verified storage hosts within 500m of campus. Secure booking with escrow payment and KYC verification. Starting at 30,000 KRW/month.",
     images: [
@@ -53,7 +53,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Luggy – Find Storage Near Campus",
+    title: "Luggy",
     description:
       "Store your luggage securely with verified hosts within 500m. Fast booking, escrow payment, transparent pricing.",
     images: ["https://luggy.app/images/og-luggy.jpeg"],
