@@ -8,7 +8,7 @@ export default function Footer() {
             'GeistMono, ui-monospace, SFMono-Regular, "Roboto Mono", Menlo, Monaco, "Liberation Mono", "DejaVu Sans Mono", "Courier New", monospace',
         }}
       >
-        Made by Luggy Team • Connecting Students with Storage
+        Made by Luggy Team
       </p>
     </footer>
   )

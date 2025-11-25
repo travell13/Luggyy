@@ -266,7 +266,7 @@ export default function Home() {
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <a
-                href="mailto:contact@luggy.app"
+                href="mailto:luggy.service@gmail.com"
                 className="inline-flex items-center justify-center bg-gradient-to-r from-[#00D9FF] via-[#00B4D8] to-[#0077B6] text-black font-mono text-sm font-semibold tracking-wider py-3 px-6 rounded-lg hover:opacity-90 transition-opacity"
                 style={{
                   fontFamily:
