@@ -44,9 +44,8 @@ export default function LuggyFAQ({ onOpenApp }: LuggyFAQProps) {
       <div className="max-w-4xl mx-auto px-4 sm:px-6">
         <h2
           ref={titleAnimation.ref}
-          className={`text-center mb-12 md:mb-16 font-semibold transition-all duration-1000 ${
-            titleAnimation.isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
-          }`}
+          className={`text-center mb-12 md:mb-16 font-semibold transition-all duration-1000 ${titleAnimation.isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+            }`}
           style={{
             backgroundImage: isDark
               ? "linear-gradient(rgb(245, 245, 245), rgb(245, 245, 245) 29%, rgb(153, 153, 153))"
@@ -67,18 +66,16 @@ export default function LuggyFAQ({ onOpenApp }: LuggyFAQProps) {
 
         <div
           ref={accordionAnimation.ref}
-          className={`transition-all duration-1000 ${
-            accordionAnimation.isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
-          }`}
+          className={`transition-all duration-1000 ${accordionAnimation.isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+            }`}
         >
           <Accordion type="single" collapsible className="w-full space-y-4">
             {faqs.map((faq, index) => (
               <AccordionItem
                 key={index}
                 value={`item-${index}`}
-                className={`border rounded-lg overflow-hidden ${
-                  isDark ? "border-white/10 bg-white/5" : "border-gray-200 bg-white shadow-sm"
-                }`}
+                className={`border rounded-lg overflow-hidden ${isDark ? "border-white/10 bg-white/5" : "border-gray-200 bg-white shadow-sm"
+                  }`}
               >
                 <AccordionTrigger className="px-5 py-4 hover:no-underline">
                   <span
@@ -101,7 +98,7 @@ export default function LuggyFAQ({ onOpenApp }: LuggyFAQProps) {
                       fontFamily:
                         language === "ko"
                           ? "var(--font-noto-sans-kr), sans-serif"
-                          : 'GeistMono, ui-monospace, SFMono-Regular, "Roboto Mono", Menlo, Monaco, "Liberation Mono", "DejaVu Sans Mono", "Courier New", monospace',
+                          : 'var(--font-geist-mono), ui-monospace, SFMono-Regular, "Roboto Mono", Menlo, Monaco, "Liberation Mono", "DejaVu Sans Mono", "Courier New", monospace',
                       fontSize: "15px",
                       lineHeight: "1.5",
                     }}
@@ -116,9 +113,8 @@ export default function LuggyFAQ({ onOpenApp }: LuggyFAQProps) {
 
         <div
           ref={ctaAnimation.ref}
-          className={`mt-12 md:mt-16 text-center transition-all duration-1000 delay-200 ${
-            ctaAnimation.isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
-          }`}
+          className={`mt-12 md:mt-16 text-center transition-all duration-1000 delay-200 ${ctaAnimation.isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+            }`}
         >
           <p
             className={isDark ? "text-white/80 mb-6" : "text-gray-700 mb-6"}
@@ -126,7 +122,7 @@ export default function LuggyFAQ({ onOpenApp }: LuggyFAQProps) {
               fontFamily:
                 language === "ko"
                   ? "var(--font-noto-sans-kr), sans-serif"
-                  : 'GeistMono, ui-monospace, SFMono-Regular, "Roboto Mono", Menlo, Monaco, "Liberation Mono", "DejaVu Sans Mono", "Courier New", monospace',
+                  : 'var(--font-geist-mono), ui-monospace, SFMono-Regular, "Roboto Mono", Menlo, Monaco, "Liberation Mono", "DejaVu Sans Mono", "Courier New", monospace',
               fontSize: "16px",
               lineHeight: "1.5",
             }}
@@ -137,14 +133,13 @@ export default function LuggyFAQ({ onOpenApp }: LuggyFAQProps) {
           {onOpenApp && (
             <Button
               onClick={onOpenApp}
-              className={`font-mono text-sm font-semibold tracking-wider py-3 px-6 rounded-lg ${
-                isDark ? "bg-white hover:bg-gray-100 text-black" : "bg-gray-900 hover:bg-gray-800 text-white"
-              }`}
+              className={`font-mono text-sm font-semibold tracking-wider py-3 px-6 rounded-lg ${isDark ? "bg-white hover:bg-gray-100 text-black" : "bg-gray-900 hover:bg-gray-800 text-white"
+                }`}
               style={{
                 fontFamily:
                   language === "ko"
                     ? "var(--font-noto-sans-kr), sans-serif"
-                    : 'GeistMono, ui-monospace, SFMono-Regular, "Roboto Mono", Menlo, Monaco, "Liberation Mono", "DejaVu Sans Mono", "Courier New", monospace',
+                    : 'var(--font-geist-mono), ui-monospace, SFMono-Regular, "Roboto Mono", Menlo, Monaco, "Liberation Mono", "DejaVu Sans Mono", "Courier New", monospace',
                 letterSpacing: "0.56px",
                 height: "48px",
               }}

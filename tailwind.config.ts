@@ -20,6 +20,7 @@ const config: Config = {
     extend: {
       fontFamily: {
         geist: ["var(--font-geist-sans)", "GeistSans Fallback", "sans-serif"],
+        mono: ["var(--font-geist-mono)", "GeistMono Fallback", "monospace"],
       },
       colors: {
         border: "hsl(var(--border))",

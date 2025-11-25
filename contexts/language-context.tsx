@@ -60,16 +60,16 @@ const translations: Record<Language, Record<string, string>> = {
     "faq.title": "Frequently Asked Questions",
     "faq.q1": "How much does it cost?",
     "faq.a1":
-      "You get to bid on the price! Hosts set their asking price starting from 30,000 KRW/month, and you can negotiate directly with them. Find the best deal for your storage needs.",
+      "You get to bid on the price! Hosts set their asking price, and you can negotiate directly with them. Find the best deal for your storage needs.",
     "faq.q2": "Can I access my luggage anytime?",
     "faq.a2":
-      "Access depends on the host's availability. Most hosts offer flexible drop-off and pick-up times during business hours.",
+      "Access depends on the host's availability.",
     "faq.q3": "How do I become a host?",
     "faq.a3":
       "Share your unused space, set your monthly rate, and we'll match you with students who need storage. A simple way to make passive income from your extra room.",
     "faq.q4": "Is my personal information safe?",
     "faq.a4":
-      "Yes. We use masked chat so neither party sees personal contact info. KYC verification is confidential and secure.",
+      "Yes. We use masked chat so neither party sees personal contact info.",
     "faq.ready": "Ready to find your storage? Get started in seconds.",
     "faq.getStarted": "GET STARTED",
 
@@ -148,7 +148,7 @@ const translations: Record<Language, Record<string, string>> = {
     "faq.title": "자주 묻는 질문 (FAQ)",
     "faq.q1": "비용은 얼마인가요?",
     "faq.a1":
-      "가격은 입찰 방식입니다! 호스트가 월 30,000원부터 시작하는 희망 가격을 설정하면, 직접 협상할 수 있습니다. 가장 적합한 보관 조건을 찾아보세요.",
+      "여러분이 가격을 제시할 수 있습니다!호스트가 원하는 금액을 설정하면, 여러분은 직접 협상할 수 있습니다.필요한 보관 공간을 가장 좋은 조건으로 이용해 보세요.",
     "faq.q2": "짐을 언제든지 찾을 수 있나요?",
     "faq.a2":
       "호스트의 가능 시간에 따라 다릅니다. 대부분의 호스트는 업무 시간 동안 유연한 드롭오프 및 픽업 시간을 제공합니다.",
