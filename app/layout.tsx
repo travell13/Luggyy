@@ -14,7 +14,7 @@ const notoSansKR = Noto_Sans_KR({
 })
 
 export const metadata: Metadata = {
-  title: "Luggy – The Airbnb for Luggage Storage | Book Storage Near Campus",
+  title: "Luggy",
   description:
     "Store your luggage near campus for as low as 30,000 KRW/month. Connect with verified hosts within 500m using Luggy. Secure booking, escrow payment, KYC verification.",
   keywords:
