@@ -51,17 +51,33 @@ export default function UserRegistrationModal({ isOpen, onClose }: UserRegistrat
     e.preventDefault()
     setLoading(true)
 
-    await new Promise((resolve) => setTimeout(resolve, 1000))
+    try {
+      const response = await fetch("/api/waitlist", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ ...formData, language }),
+      })
 
-    console.log("User registration submitted:", formData)
-    setSubmitted(true)
-    setLoading(false)
+      if (!response.ok) {
+        throw new Error("Failed to join waitlist")
+      }
 
-    setTimeout(() => {
-      setSubmitted(false)
-      setFormData({ name: "", email: "", userType: "user" })
-      onClose()
-    }, 3000)
+      console.log("User registration submitted:", formData)
+      setSubmitted(true)
+
+      setTimeout(() => {
+        setSubmitted(false)
+        setFormData({ name: "", email: "", userType: "user" })
+        onClose()
+      }, 3000)
+    } catch (error) {
+      console.error("Submission error:", error)
+      alert("Failed to join waitlist. Please try again.")
+    } finally {
+      setLoading(false)
+    }
   }
 
   if (!isOpen) return null
