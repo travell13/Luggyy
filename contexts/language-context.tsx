@@ -19,7 +19,7 @@ const translations: Record<Language, Record<string, string>> = {
 
     // Hero
     "hero.title": "Going back home for break?",
-    "hero.subtitle": "Keep your luggage safe without breaking the bank—right around the corner.",
+    "hero.subtitle": "Keep your luggage safe without breaking the bank Cheap,Easy,Close",
     "hero.cta": "JOIN THE WAITLIST",
 
     // Campus Section
