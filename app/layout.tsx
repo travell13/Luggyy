@@ -17,7 +17,7 @@ const notoSansKR = Noto_Sans_KR({
 export const metadata: Metadata = {
   title: "Luggy",
   description:
-    "Store your luggage near campus for as low as 30,000 KRW/month. Connect with verified hosts within 500m using Luggy. Secure booking, escrow payment, KYC verification.",
+    "Keep your luggage safe without breaking the bank—right around the corner. Connect with verified hosts within 500m using Luggy. Secure booking, escrow payment, KYC verification.",
   keywords:
     "luggage storage, student storage, campus storage, storage booking, verified hosts, escrow payment, KYC verification",
   authors: [{ name: "Luggy Team" }],

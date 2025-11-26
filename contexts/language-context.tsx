@@ -18,8 +18,8 @@ const translations: Record<Language, Record<string, string>> = {
     "nav.contact": "Contact",
 
     // Hero
-    "hero.title": "Ready to Store Smart?",
-    "hero.subtitle": "Join thousands of students who trust Luggy for secure, affordable luggage storage.",
+    "hero.title": "Going back home for break?",
+    "hero.subtitle": "Keep your luggage safe without breaking the bank—right around the corner.",
     "hero.cta": "JOIN THE WAITLIST",
 
     // Campus Section
