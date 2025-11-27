@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, SafeAreaView, FlatList, TextInput, TouchableOpacity, StatusBar as RNStatusBar, Platform } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, SafeAreaView, FlatList, TextInput, TouchableOpacity, StatusBar as RNStatusBar, Platform, BackHandler } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { Search, SlidersHorizontal, User } from 'lucide-react-native';
 import MaskedView from '@react-native-masked-view/masked-view';
@@ -77,6 +77,19 @@ export default function HomeScreen({ navigation }) {
   // Filter state
   const [priceRange, setPriceRange] = useState([0, 100000]);
   const [sortBy, setSortBy] = useState('distance'); // distance, price-low, price-high, rating
+  
+  // Handle back button when search is focused
+  useEffect(() => {
+    const backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
+      if (isSearchFocused) {
+        setIsSearchFocused(false);
+        return true; // Prevent default behavior (exit app)
+      }
+      return false; // Let default behavior happen
+    });
+
+    return () => backHandler.remove();
+  }, [isSearchFocused]);
   
   // Filter and sort listings
   const getFilteredListings = () => {

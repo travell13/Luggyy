@@ -60,7 +60,7 @@ function MainTabNavigator() {
 export default function AppNavigator() {
   // TODO: Replace with actual auth state management (e.g., AsyncStorage, Context)
   // Set to true to test main app, false to test login screens
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(true);
 
   return (
     <NavigationContainer>
