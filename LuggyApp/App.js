@@ -1,31 +1,47 @@
-import React, { useCallback } from 'react';
-import { View } from 'react-native';
-import { useFonts } from 'expo-font';
+import React, { useState, useEffect } from 'react';
 import * as SplashScreen from 'expo-splash-screen';
+import * as Font from 'expo-font';
 import AppNavigator from './src/navigation/AppNavigator';
+import { AuthProvider } from './src/contexts/AuthContext';
 
+// Keep the splash screen visible while we fetch resources
 SplashScreen.preventAutoHideAsync();
 
 export default function App() {
-  const [fontsLoaded] = useFonts({
-    'Geist-Regular': require('./assets/fonts/Geist-Regular.ttf'),
-    'Geist-Bold': require('./assets/fonts/Geist-Bold.ttf'),
-    'GeistMono-Regular': require('./assets/fonts/GeistMono-Regular.ttf'),
-  });
+  const [appIsReady, setAppIsReady] = useState(false);
 
-  const onLayoutRootView = useCallback(async () => {
-    if (fontsLoaded) {
-      await SplashScreen.hideAsync();
+  useEffect(() => {
+    async function prepare() {
+      try {
+        // Load fonts
+        await Font.loadAsync({
+          'Geist-Regular': require('./assets/fonts/Geist-Regular.ttf'),
+          'Geist-Bold': require('./assets/fonts/Geist-Bold.ttf'),
+          'GeistMono-Regular': require('./assets/fonts/GeistMono-Regular.ttf'),
+        });
+      } catch (e) {
+        console.warn(e);
+      } finally {
+        setAppIsReady(true);
+      }
     }
-  }, [fontsLoaded]);
 
-  if (!fontsLoaded) {
+    prepare();
+  }, []);
+
+  useEffect(() => {
+    if (appIsReady) {
+      SplashScreen.hideAsync();
+    }
+  }, [appIsReady]);
+
+  if (!appIsReady) {
     return null;
   }
 
   return (
-    <View style={{ flex: 1 }} onLayout={onLayoutRootView}>
+    <AuthProvider>
       <AppNavigator />
-    </View>
+    </AuthProvider>
   );
 }

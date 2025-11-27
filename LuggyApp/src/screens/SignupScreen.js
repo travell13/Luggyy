@@ -1,29 +1,51 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, KeyboardAvoidingView, Platform, SafeAreaView, StatusBar as RNStatusBar, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, KeyboardAvoidingView, Platform, SafeAreaView, StatusBar as RNStatusBar, ScrollView, Alert, ActivityIndicator } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { LinearGradient } from 'expo-linear-gradient';
 import MaskedView from '@react-native-masked-view/masked-view';
+import { useAuth } from '../contexts/AuthContext';
 
 export default function SignupScreen({ navigation }) {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+  const { signUp } = useAuth();
 
-  const handleSignup = () => {
-    // TODO: Implement actual signup logic
-    console.log('Signup:', name, email, password);
-    // For now, navigate to main app
-    // navigation.navigate('Main');
+  const handleSignup = async () => {
+    if (!name || !email || !password) {
+      Alert.alert('Error', 'Please fill in all fields');
+      return;
+    }
+
+    if (password.length < 6) {
+      Alert.alert('Error', 'Password must be at least 6 characters');
+      return;
+    }
+
+    setLoading(true);
+    const { error } = await signUp(email, password, name);
+    setLoading(false);
+
+    if (error) {
+      Alert.alert('Signup Failed', error.message);
+    } else {
+      Alert.alert(
+        'Success!',
+        'Please check your email to verify your account',
+        [{ text: 'OK', onPress: () => navigation.goBack() }]
+      );
+    }
   };
 
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar style="dark" />
-      <KeyboardAvoidingView 
+      <KeyboardAvoidingView
         style={styles.keyboardView}
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       >
-        <ScrollView 
+        <ScrollView
           contentContainerStyle={styles.scrollContent}
           showsVerticalScrollIndicator={false}
         >
@@ -86,14 +108,18 @@ export default function SignupScreen({ navigation }) {
           </View>
 
           {/* Sign Up Button */}
-          <TouchableOpacity onPress={handleSignup} style={styles.signupButtonContainer}>
+          <TouchableOpacity onPress={handleSignup} style={styles.signupButtonContainer} disabled={loading}>
             <LinearGradient
               colors={['#00D9FF', '#00B4D8', '#0077B6']}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 0 }}
               style={styles.signupButton}
             >
-              <Text style={styles.signupButtonText}>Sign Up</Text>
+              {loading ? (
+                <ActivityIndicator color="#000" />
+              ) : (
+                <Text style={styles.signupButtonText}>Sign Up</Text>
+              )}
             </LinearGradient>
           </TouchableOpacity>
 

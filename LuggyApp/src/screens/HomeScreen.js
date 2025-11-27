@@ -35,6 +35,7 @@ const MOCK_STORAGE_SPOTS = [
     price: 30000,
     image: 'https://images.unsplash.com/photo-1590247813693-5541d1c609fd?w=800&q=80',
     isFavorite: false,
+    views: 245,
   },
   {
     id: '2',
@@ -45,6 +46,7 @@ const MOCK_STORAGE_SPOTS = [
     price: 45000,
     image: 'https://images.unsplash.com/photo-1586105251261-72a756497a11?w=800&q=80',
     isFavorite: true,
+    views: 312,
   },
   {
     id: '3',
@@ -55,6 +57,7 @@ const MOCK_STORAGE_SPOTS = [
     price: 35000,
     image: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800&q=80',
     isFavorite: false,
+    views: 178,
   },
   {
     id: '4',
@@ -65,6 +68,7 @@ const MOCK_STORAGE_SPOTS = [
     price: 55000,
     image: 'https://images.unsplash.com/photo-1565514020176-db7933f383e2?w=800&q=80',
     isFavorite: false,
+    views: 421,
   },
 ];
 
@@ -73,11 +77,19 @@ export default function HomeScreen({ navigation }) {
   const [showFilterModal, setShowFilterModal] = useState(false);
   const [showSortModal, setShowSortModal] = useState(false);
   const [isSearchFocused, setIsSearchFocused] = useState(false);
-  
+  const [listings, setListings] = useState(MOCK_STORAGE_SPOTS);
+
   // Filter state
   const [priceRange, setPriceRange] = useState([0, 100000]);
   const [sortBy, setSortBy] = useState('distance'); // distance, price-low, price-high, rating
-  
+
+  // Toggle favorite function
+  const handleToggleFavorite = (id) => {
+    setListings(listings.map(item =>
+      item.id === id ? { ...item, isFavorite: !item.isFavorite } : item
+    ));
+  };
+
   // Handle back button when search is focused
   useEffect(() => {
     const backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
@@ -90,25 +102,25 @@ export default function HomeScreen({ navigation }) {
 
     return () => backHandler.remove();
   }, [isSearchFocused]);
-  
+
   // Filter and sort listings
   const getFilteredListings = () => {
-    let filtered = [...MOCK_STORAGE_SPOTS];
-    
+    let filtered = [...listings];
+
     // Search filter
     if (searchQuery.trim()) {
       const query = searchQuery.toLowerCase();
-      filtered = filtered.filter(item => 
+      filtered = filtered.filter(item =>
         item.title.toLowerCase().includes(query) ||
         item.distance.toLowerCase().includes(query)
       );
     }
-    
+
     // Price filter
-    filtered = filtered.filter(item => 
+    filtered = filtered.filter(item =>
       item.price >= priceRange[0] && item.price <= priceRange[1]
     );
-    
+
     // Sort
     switch (sortBy) {
       case 'price-low':
@@ -125,7 +137,7 @@ export default function HomeScreen({ navigation }) {
         filtered.sort((a, b) => parseFloat(a.distance) - parseFloat(b.distance));
         break;
     }
-    
+
     return filtered;
   };
 
@@ -135,7 +147,7 @@ export default function HomeScreen({ navigation }) {
   const renderHeader = () => (
     <View style={styles.headerContainer}>
       <View style={styles.searchContainer}>
-        <TouchableOpacity 
+        <TouchableOpacity
           style={styles.searchBar}
           onPress={() => setIsSearchFocused(true)}
           activeOpacity={0.7}
@@ -145,7 +157,7 @@ export default function HomeScreen({ navigation }) {
             {searchQuery || 'Search by location or title'}
           </Text>
         </TouchableOpacity>
-        <TouchableOpacity 
+        <TouchableOpacity
           style={styles.profileButton}
           onPress={() => navigation.navigate('Profile')}
         >
@@ -154,7 +166,7 @@ export default function HomeScreen({ navigation }) {
       </View>
 
       <GradientText>Popular hosts</GradientText>
-      
+
       {filteredListings.length === 0 && (
         <Text style={styles.noResults}>No listings found. Try adjusting your filters.</Text>
       )}
@@ -177,6 +189,8 @@ export default function HomeScreen({ navigation }) {
               price={item.price}
               image={item.image}
               isFavorite={item.isFavorite}
+              onToggleFavorite={handleToggleFavorite}
+              views={item.views}
             />
           )}
           keyExtractor={item => item.id}
@@ -184,9 +198,9 @@ export default function HomeScreen({ navigation }) {
           ListHeaderComponent={renderHeader}
           showsVerticalScrollIndicator={false}
         />
-        
+
         {/* Floating Action Button */}
-        <TouchableOpacity 
+        <TouchableOpacity
           style={styles.fabContainer}
           onPress={() => navigation.navigate('AddListing')}
         >
@@ -204,7 +218,7 @@ export default function HomeScreen({ navigation }) {
         {/* Filter Modal */}
         {showFilterModal && (
           <View style={styles.modalOverlay}>
-            <TouchableOpacity 
+            <TouchableOpacity
               style={styles.modalBackdrop}
               activeOpacity={1}
               onPress={() => setShowFilterModal(false)}
@@ -225,19 +239,19 @@ export default function HomeScreen({ navigation }) {
                 </View>
                 {/* Price buttons */}
                 <View style={styles.priceButtons}>
-                  <TouchableOpacity 
+                  <TouchableOpacity
                     style={styles.pricePreset}
                     onPress={() => setPriceRange([0, 30000])}
                   >
                     <Text style={styles.pricePresetText}>Under ₩30k</Text>
                   </TouchableOpacity>
-                  <TouchableOpacity 
+                  <TouchableOpacity
                     style={styles.pricePreset}
                     onPress={() => setPriceRange([30000, 50000])}
                   >
                     <Text style={styles.pricePresetText}>₩30-50k</Text>
                   </TouchableOpacity>
-                  <TouchableOpacity 
+                  <TouchableOpacity
                     style={styles.pricePreset}
                     onPress={() => setPriceRange([50000, 100000])}
                   >
@@ -247,13 +261,13 @@ export default function HomeScreen({ navigation }) {
               </View>
 
               <View style={styles.modalActions}>
-                <TouchableOpacity 
+                <TouchableOpacity
                   style={styles.resetButton}
                   onPress={() => setPriceRange([0, 100000])}
                 >
                   <Text style={styles.resetButtonText}>Reset</Text>
                 </TouchableOpacity>
-                <TouchableOpacity 
+                <TouchableOpacity
                   style={styles.applyButton}
                   onPress={() => setShowFilterModal(false)}
                 >
@@ -267,7 +281,7 @@ export default function HomeScreen({ navigation }) {
         {/* Sort Modal */}
         {showSortModal && (
           <View style={styles.modalOverlay}>
-            <TouchableOpacity 
+            <TouchableOpacity
               style={styles.modalBackdrop}
               activeOpacity={1}
               onPress={() => setShowSortModal(false)}
@@ -328,7 +342,7 @@ export default function HomeScreen({ navigation }) {
                 {/* Filters Section */}
                 <View style={styles.filtersSection}>
                   <Text style={styles.filtersSectionTitle}>Filters</Text>
-                  
+
                   {/* Price Filter */}
                   <View style={styles.filterGroup}>
                     <Text style={styles.filterGroupLabel}>Price Range</Text>
@@ -336,7 +350,7 @@ export default function HomeScreen({ navigation }) {
                       <Text style={styles.priceValue}>₩{priceRange[0].toLocaleString()}</Text>
                       <Text style={styles.priceValue}>₩{priceRange[1].toLocaleString()}</Text>
                     </View>
-                    
+
                     <Text style={styles.sliderLabel}>Minimum Price</Text>
                     <Slider
                       style={styles.slider}
@@ -349,7 +363,7 @@ export default function HomeScreen({ navigation }) {
                       maximumTrackTintColor="#e5e7eb"
                       thumbTintColor="#1e293b"
                     />
-                    
+
                     <Text style={styles.sliderLabel}>Maximum Price</Text>
                     <Slider
                       style={styles.slider}
@@ -386,7 +400,7 @@ export default function HomeScreen({ navigation }) {
                   </View>
 
                   {/* Reset Button */}
-                  <TouchableOpacity 
+                  <TouchableOpacity
                     style={styles.resetAllButton}
                     onPress={() => {
                       setPriceRange([0, 100000]);

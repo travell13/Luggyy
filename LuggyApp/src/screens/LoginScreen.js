@@ -1,28 +1,40 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, KeyboardAvoidingView, Platform, SafeAreaView, StatusBar as RNStatusBar, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, KeyboardAvoidingView, Platform, SafeAreaView, StatusBar as RNStatusBar, ScrollView, Alert, ActivityIndicator } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { LinearGradient } from 'expo-linear-gradient';
 import MaskedView from '@react-native-masked-view/masked-view';
+import { useAuth } from '../contexts/AuthContext';
 
 export default function LoginScreen({ navigation }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+  const { signIn } = useAuth();
 
-  const handleLogin = () => {
-    // TODO: Implement actual login logic
-    console.log('Login:', email, password);
-    // For now, navigate to main app
-    // navigation.navigate('Main');
+  const handleLogin = async () => {
+    if (!email || !password) {
+      Alert.alert('Error', 'Please fill in all fields');
+      return;
+    }
+
+    setLoading(true);
+    const { error } = await signIn(email, password);
+    setLoading(false);
+
+    if (error) {
+      Alert.alert('Login Failed', error.message);
+    }
+    // Navigation will happen automatically via AuthContext state change
   };
 
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar style="dark" />
-      <KeyboardAvoidingView 
+      <KeyboardAvoidingView
         style={styles.keyboardView}
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       >
-        <ScrollView 
+        <ScrollView
           contentContainerStyle={styles.scrollContent}
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled"
@@ -79,14 +91,18 @@ export default function LoginScreen({ navigation }) {
           </View>
 
           {/* Login Button */}
-          <TouchableOpacity onPress={handleLogin} style={styles.loginButtonContainer}>
+          <TouchableOpacity onPress={handleLogin} style={styles.loginButtonContainer} disabled={loading}>
             <LinearGradient
               colors={['#00D9FF', '#00B4D8', '#0077B6']}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 0 }}
               style={styles.loginButton}
             >
-              <Text style={styles.loginButtonText}>Log In</Text>
+              {loading ? (
+                <ActivityIndicator color="#000" />
+              ) : (
+                <Text style={styles.loginButtonText}>Log In</Text>
+              )}
             </LinearGradient>
           </TouchableOpacity>
 

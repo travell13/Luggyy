@@ -1,35 +1,41 @@
 import React from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
-import { Star, MapPin, Heart } from 'lucide-react-native';
+import { Star, MapPin, Heart, Eye } from 'lucide-react-native';
 import { useNavigation } from '@react-navigation/native';
 
-export default function StorageCard({ title, distance, rating, reviews, price, image, onPress, isFavorite, listing }) {
+export default function StorageCard({ title, distance, rating, reviews, price, image, onPress, isFavorite, listing, onToggleFavorite, views }) {
   const navigation = useNavigation();
 
   return (
-    <TouchableOpacity 
-      style={styles.card} 
+    <TouchableOpacity
+      style={styles.card}
       onPress={() => navigation.navigate('StorageDetail', { listing })}
     >
       <View style={styles.imageContainer}>
-        <Image 
-          source={{ uri: image }} 
+        <Image
+          source={{ uri: image }}
           style={styles.image}
         />
-        <View style={styles.favoriteButton}>
-          <Heart 
-            size={20} 
-            color={isFavorite ? '#ef4444' : '#fff'} 
+        <TouchableOpacity
+          style={styles.favoriteButton}
+          onPress={(e) => {
+            e.stopPropagation();
+            onToggleFavorite && onToggleFavorite(listing.id);
+          }}
+        >
+          <Heart
+            size={20}
+            color={isFavorite ? '#ef4444' : '#fff'}
             fill={isFavorite ? '#ef4444' : 'transparent'}
           />
-        </View>
+        </TouchableOpacity>
       </View>
-      
+
       <View style={styles.content}>
         <View style={styles.header}>
           <Text style={styles.title} numberOfLines={1}>{title}</Text>
         </View>
-        
+
         <View style={styles.locationContainer}>
           <MapPin size={12} color="#64748b" />
           <Text style={styles.distanceText}>{distance} away</Text>
@@ -37,9 +43,17 @@ export default function StorageCard({ title, distance, rating, reviews, price, i
 
         <View style={styles.footer}>
           <Text style={styles.priceText}>₩{price.toLocaleString()}<Text style={styles.periodText}>/mo</Text></Text>
-          <View style={styles.ratingContainer}>
-            <Star size={12} color="#1e293b" fill="#1e293b" />
-            <Text style={styles.ratingText}>{rating}</Text>
+          <View style={styles.metaContainer}>
+            <View style={styles.ratingContainer}>
+              <Star size={12} color="#1e293b" fill="#1e293b" />
+              <Text style={styles.ratingText}>{rating}</Text>
+            </View>
+            {views !== undefined && (
+              <View style={styles.viewsContainer}>
+                <Eye size={12} color="#64748b" />
+                <Text style={styles.viewsText}>{views}</Text>
+              </View>
+            )}
           </View>
         </View>
       </View>
@@ -121,6 +135,11 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontFamily: 'Geist-Regular',
   },
+  metaContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
   ratingContainer: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -129,6 +148,16 @@ const styles = StyleSheet.create({
   ratingText: {
     color: '#1e293b',
     fontSize: 14,
+    fontFamily: 'Geist-Regular',
+  },
+  viewsContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+  },
+  viewsText: {
+    color: '#64748b',
+    fontSize: 13,
     fontFamily: 'Geist-Regular',
   },
 });

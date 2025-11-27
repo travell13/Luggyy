@@ -22,17 +22,21 @@ const AMENITIES = [
   { id: 'flexible', label: 'Flexible Terms', icon: Calendar },
 ];
 
-export default function AddListingScreen({ navigation }) {
+export default function AddListingScreen({ navigation, route }) {
+  // Check if we're in edit mode
+  const editMode = route?.params?.editMode || false;
+  const existingListing = route?.params?.listing || null;
+
   const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState({
-    title: '',
-    description: '',
-    location: '',
-    price: '',
-    availableFrom: new Date(),
-    availableUntil: null, // null means flexible
-    photos: [],
-    amenities: [],
+    title: existingListing?.title || '',
+    description: existingListing?.description || '',
+    location: existingListing?.location || '',
+    price: existingListing?.price || '',
+    availableFrom: existingListing?.availableFrom ? new Date(existingListing.availableFrom) : new Date(),
+    availableUntil: existingListing?.availableUntil ? new Date(existingListing.availableUntil) : null,
+    photos: existingListing?.photos?.map(uri => ({ uri })) || [],
+    amenities: existingListing?.amenities || [],
   });
   const [showStartDatePicker, setShowStartDatePicker] = useState(false);
   const [showEndDatePicker, setShowEndDatePicker] = useState(false);
@@ -71,7 +75,11 @@ export default function AddListingScreen({ navigation }) {
   };
 
   const handleSubmit = () => {
-    console.log('Submitting listing:', formData);
+    if (editMode) {
+      console.log('Updating listing:', { ...existingListing, ...formData });
+    } else {
+      console.log('Creating new listing:', formData);
+    }
     navigation.goBack();
   };
 
@@ -129,7 +137,7 @@ export default function AddListingScreen({ navigation }) {
         };
 
         const days = calculateDays();
-        
+
         // Calculate suggested pricing based on duration
         const getSuggestedPricing = () => {
           if (!days) {
@@ -138,7 +146,7 @@ export default function AddListingScreen({ navigation }) {
               monthly: { min: 25000, max: 50000 }
             };
           }
-          
+
           // Price suggestions based on duration
           if (days <= 7) {
             return {
@@ -163,23 +171,23 @@ export default function AddListingScreen({ navigation }) {
         return (
           <View style={styles.stepContent}>
             <Text style={styles.stepTitle}>Availability & Pricing</Text>
-            
+
             {/* Storage Availability Dates */}
             <Text style={styles.sectionLabel}>When is it available?</Text>
-            
+
             <View style={styles.datePickerContainer}>
               <View style={styles.dateField}>
                 <Text style={styles.fieldLabel}>Available From</Text>
-                <TouchableOpacity 
+                <TouchableOpacity
                   style={styles.dateButton}
                   onPress={() => setShowStartDatePicker(true)}
                 >
                   <Calendar size={20} color="#1e293b" />
                   <Text style={styles.dateButtonText}>
-                    {formData.availableFrom.toLocaleDateString('en-US', { 
-                      month: 'short', 
-                      day: 'numeric', 
-                      year: 'numeric' 
+                    {formData.availableFrom.toLocaleDateString('en-US', {
+                      month: 'short',
+                      day: 'numeric',
+                      year: 'numeric'
                     })}
                   </Text>
                 </TouchableOpacity>
@@ -187,24 +195,24 @@ export default function AddListingScreen({ navigation }) {
 
               <View style={styles.dateField}>
                 <Text style={styles.fieldLabel}>Available Until</Text>
-                <TouchableOpacity 
+                <TouchableOpacity
                   style={styles.dateButton}
                   onPress={() => setShowEndDatePicker(true)}
                 >
                   <Calendar size={20} color="#1e293b" />
                   <Text style={styles.dateButtonText}>
-                    {formData.availableUntil 
-                      ? formData.availableUntil.toLocaleDateString('en-US', { 
-                          month: 'short', 
-                          day: 'numeric', 
-                          year: 'numeric' 
-                        })
+                    {formData.availableUntil
+                      ? formData.availableUntil.toLocaleDateString('en-US', {
+                        month: 'short',
+                        day: 'numeric',
+                        year: 'numeric'
+                      })
                       : 'Flexible'
                     }
                   </Text>
                 </TouchableOpacity>
                 {formData.availableUntil && (
-                  <TouchableOpacity 
+                  <TouchableOpacity
                     style={styles.flexibleButton}
                     onPress={() => setFormData({ ...formData, availableUntil: null })}
                   >
@@ -256,7 +264,7 @@ export default function AddListingScreen({ navigation }) {
             {/* Pricing Section */}
             <View style={styles.sectionDivider} />
             <Text style={styles.sectionLabel}>Set your price</Text>
-            
+
             <View style={styles.inputWithIcon}>
               <Text style={styles.currencySymbol}>₩</Text>
               <TextInput
@@ -362,7 +370,7 @@ export default function AddListingScreen({ navigation }) {
           <TouchableOpacity onPress={handleBack} style={styles.backButton}>
             <ArrowLeft size={24} color="#1e293b" />
           </TouchableOpacity>
-          <Text style={styles.headerTitle}>Add Listing</Text>
+          <Text style={styles.headerTitle}>{editMode ? 'Edit Listing' : 'Add Listing'}</Text>
           <View style={styles.placeholder} />
         </View>
 
@@ -392,30 +400,30 @@ export default function AddListingScreen({ navigation }) {
         <View style={styles.footer}>
           {currentStep < STEPS.length ? (
             <TouchableOpacity onPress={handleNext} style={styles.nextButtonContainer}>
-            <LinearGradient
-              colors={['rgb(30, 30, 30)', 'rgb(30, 30, 30)', 'rgb(100, 100, 100)']}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 0, y: 1 }}
-              locations={[0, 0.29, 1]}
-              style={styles.nextButton}
-            >
-              <Text style={styles.nextButtonText}>Next</Text>
-              <ArrowRight size={20} color="#fff" />
-            </LinearGradient>
-          </TouchableOpacity>
+              <LinearGradient
+                colors={['rgb(30, 30, 30)', 'rgb(30, 30, 30)', 'rgb(100, 100, 100)']}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 0, y: 1 }}
+                locations={[0, 0.29, 1]}
+                style={styles.nextButton}
+              >
+                <Text style={styles.nextButtonText}>Next</Text>
+                <ArrowRight size={20} color="#fff" />
+              </LinearGradient>
+            </TouchableOpacity>
           ) : (
             <TouchableOpacity onPress={handleSubmit} style={styles.nextButtonContainer}>
-            <LinearGradient
-              colors={['rgb(30, 30, 30)', 'rgb(30, 30, 30)', 'rgb(100, 100, 100)']}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 0, y: 1 }}
-              locations={[0, 0.29, 1]}
-              style={styles.nextButton}
-            >
-              <Text style={styles.nextButtonText}>Submit Listing</Text>
-              <Check size={20} color="#fff" />
-            </LinearGradient>
-          </TouchableOpacity>
+              <LinearGradient
+                colors={['rgb(30, 30, 30)', 'rgb(30, 30, 30)', 'rgb(100, 100, 100)']}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 0, y: 1 }}
+                locations={[0, 0.29, 1]}
+                style={styles.nextButton}
+              >
+                <Text style={styles.nextButtonText}>{editMode ? 'Update Listing' : 'Submit Listing'}</Text>
+                <Check size={20} color="#fff" />
+              </LinearGradient>
+            </TouchableOpacity>
           )}
         </View>
       </View>

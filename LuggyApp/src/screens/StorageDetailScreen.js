@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity, Dimensions, SafeAreaView } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { ArrowLeft, Star, MapPin, Heart, Share2, Calendar, Package, Shield, Clock, MessageCircle } from 'lucide-react-native';
@@ -8,8 +8,19 @@ import MapView, { Marker } from 'react-native-maps';
 const { width } = Dimensions.get('window');
 
 export default function StorageDetailScreen({ route, navigation }) {
-  const { listing } = route.params;
+  const { listing, isOwnListing } = route.params;
   const [isFavorite, setIsFavorite] = useState(listing.isFavorite);
+
+  // Track view count when user views someone else's listing
+  useEffect(() => {
+    if (!isOwnListing) {
+      // In a real app, this would make an API call to increment the view count
+      // For now, we'll just log it
+      console.log(`View tracked for listing: ${listing.id}`);
+      // Example API call:
+      // fetch(`/api/listings/${listing.id}/increment-views`, { method: 'POST' })
+    }
+  }, [listing.id, isOwnListing]);
 
   // Mock coordinates - in real app, get from listing data
   const location = {
@@ -29,7 +40,7 @@ export default function StorageDetailScreen({ route, navigation }) {
   return (
     <View style={styles.container}>
       <StatusBar style="light" />
-      
+
       {/* Header with back button */}
       <View style={styles.header}>
         <TouchableOpacity style={styles.headerButton} onPress={() => navigation.goBack()}>
@@ -39,13 +50,13 @@ export default function StorageDetailScreen({ route, navigation }) {
           <TouchableOpacity style={styles.headerButton}>
             <Share2 size={20} color="#1e293b" />
           </TouchableOpacity>
-          <TouchableOpacity 
+          <TouchableOpacity
             style={styles.headerButton}
             onPress={() => setIsFavorite(!isFavorite)}
           >
-            <Heart 
-              size={20} 
-              color={isFavorite ? '#ef4444' : '#1e293b'} 
+            <Heart
+              size={20}
+              color={isFavorite ? '#ef4444' : '#1e293b'}
               fill={isFavorite ? '#ef4444' : 'transparent'}
             />
           </TouchableOpacity>
@@ -86,35 +97,37 @@ export default function StorageDetailScreen({ route, navigation }) {
             </View>
           </View>
 
-          {/* Host Info */}
-          <View style={styles.hostSection}>
-            <View style={styles.hostAvatar}>
-              <Text style={styles.hostInitial}>J</Text>
-            </View>
-            <View style={styles.hostInfo}>
-              <Text style={styles.hostName}>Hosted by John</Text>
-              <Text style={styles.hostStats}>Joined in 2023 · 15 reviews</Text>
-            </View>
-            <TouchableOpacity 
-              style={styles.chatButton}
-              onPress={() => navigation.navigate('Chats', {
-                screen: 'ChatDetail',
-                params: {
-                  chat: {
-                    id: listing.id,
-                    hostName: 'John',
-                    hostInitial: 'J',
-                    listingTitle: listing.title,
-                    lastMessage: '',
-                    timestamp: 'Now',
-                    unread: 0,
+          {/* Host Info - only show if not own listing */}
+          {!isOwnListing && (
+            <View style={styles.hostSection}>
+              <View style={styles.hostAvatar}>
+                <Text style={styles.hostInitial}>J</Text>
+              </View>
+              <View style={styles.hostInfo}>
+                <Text style={styles.hostName}>Hosted by John</Text>
+                <Text style={styles.hostStats}>Joined in 2023 · 15 reviews</Text>
+              </View>
+              <TouchableOpacity
+                style={styles.chatButton}
+                onPress={() => navigation.navigate('Chats', {
+                  screen: 'ChatDetail',
+                  params: {
+                    chat: {
+                      id: listing.id,
+                      hostName: 'John',
+                      hostInitial: 'J',
+                      listingTitle: listing.title,
+                      lastMessage: '',
+                      timestamp: 'Now',
+                      unread: 0,
+                    }
                   }
-                }
-              })}
-            >
-              <MessageCircle size={20} color="#1e293b" />
-            </TouchableOpacity>
-          </View>
+                })}
+              >
+                <MessageCircle size={20} color="#1e293b" />
+              </TouchableOpacity>
+            </View>
+          )}
 
           {/* Amenities */}
           <View style={styles.amenitiesSection}>
@@ -133,8 +146,8 @@ export default function StorageDetailScreen({ route, navigation }) {
           <View style={styles.descriptionSection}>
             <Text style={styles.sectionTitle}>About this storage</Text>
             <Text style={styles.description}>
-              Secure and convenient storage space perfect for students. Located just {listing.distance} from campus, 
-              this storage unit offers 24/7 access with verified security measures. Ideal for storing luggage, 
+              Secure and convenient storage space perfect for students. Located just {listing.distance} from campus,
+              this storage unit offers 24/7 access with verified security measures. Ideal for storing luggage,
               boxes, and personal belongings during breaks or semester transitions.
             </Text>
           </View>
@@ -150,8 +163,8 @@ export default function StorageDetailScreen({ route, navigation }) {
             </View>
 
             {/* Review Cards */}
-            <ScrollView 
-              horizontal 
+            <ScrollView
+              horizontal
               showsHorizontalScrollIndicator={false}
               contentContainerStyle={styles.reviewsScrollContent}
             >
@@ -189,39 +202,41 @@ export default function StorageDetailScreen({ route, navigation }) {
         </View>
       </ScrollView>
 
-      {/* Bottom Bar */}
-      <View style={styles.bottomBar}>
-        <View style={styles.priceSection}>
-          <Text style={styles.priceLabel}>
-            <Text style={styles.price}>₩{listing.price.toLocaleString()}</Text>
-            <Text style={styles.pricePeriod}>/month</Text>
-          </Text>
-        </View>
-        <TouchableOpacity onPress={() => navigation.navigate('Chats', {
-          screen: 'ChatDetail',
-          params: {
-            chat: {
-              id: listing.id,
-              hostName: 'John',
-              hostInitial: 'J',
-              listingTitle: listing.title,
-              lastMessage: '',
-              timestamp: 'Now',
-              unread: 0,
+      {/* Bottom Bar - only show for other people's listings */}
+      {!isOwnListing && (
+        <View style={styles.bottomBar}>
+          <View style={styles.priceSection}>
+            <Text style={styles.priceLabel}>
+              <Text style={styles.price}>₩{listing.price.toLocaleString()}</Text>
+              <Text style={styles.pricePeriod}>/month</Text>
+            </Text>
+          </View>
+          <TouchableOpacity onPress={() => navigation.navigate('Chats', {
+            screen: 'ChatDetail',
+            params: {
+              chat: {
+                id: listing.id,
+                hostName: 'John',
+                hostInitial: 'J',
+                listingTitle: listing.title,
+                lastMessage: '',
+                timestamp: 'Now',
+                unread: 0,
+              }
             }
-          }
-        })}>
-          <LinearGradient
-            colors={['rgb(30, 30, 30)', 'rgb(30, 30, 30)', 'rgb(100, 100, 100)']}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 0, y: 1 }}
-            locations={[0, 0.29, 1]}
-            style={styles.bookButton}
-          >
-            <Text style={styles.bookButtonText}>Chat</Text>
-          </LinearGradient>
-        </TouchableOpacity>
-      </View>
+          })}>
+            <LinearGradient
+              colors={['rgb(30, 30, 30)', 'rgb(30, 30, 30)', 'rgb(100, 100, 100)']}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 0, y: 1 }}
+              locations={[0, 0.29, 1]}
+              style={styles.bookButton}
+            >
+              <Text style={styles.bookButtonText}>Chat</Text>
+            </LinearGradient>
+          </TouchableOpacity>
+        </View>
+      )}
     </View>
   );
 }

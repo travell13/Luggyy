@@ -2,11 +2,13 @@ import React, { useState } from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { NavigationContainer } from '@react-navigation/native';
 import { Home, Map, MessageCircle } from 'lucide-react-native';
+import { View, ActivityIndicator, StyleSheet } from 'react-native';
 
 import AuthStackNavigator from './AuthStackNavigator';
 import HomeStackNavigator from './HomeStackNavigator';
 import ChatsStackNavigator from './ChatsStackNavigator';
 import MapScreen from '../screens/MapScreen';
+import { useAuth } from '../contexts/AuthContext';
 
 const Tab = createBottomTabNavigator();
 
@@ -58,13 +60,19 @@ function MainTabNavigator() {
 }
 
 export default function AppNavigator() {
-  // TODO: Replace with actual auth state management (e.g., AsyncStorage, Context)
-  // Set to true to test main app, false to test login screens
-  const [isLoggedIn, setIsLoggedIn] = useState(true);
+  const { user, loading } = useAuth();
+
+  if (loading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#0077B6" />
+      </View>
+    );
+  }
 
   return (
     <NavigationContainer>
-      {!isLoggedIn ? (
+      {!user ? (
         <AuthStackNavigator />
       ) : (
         <MainTabNavigator />
@@ -72,3 +80,12 @@ export default function AppNavigator() {
     </NavigationContainer>
   );
 }
+
+const styles = StyleSheet.create({
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#fff',
+  },
+});

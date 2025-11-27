@@ -54,34 +54,49 @@ export default function ProfileScreen({ navigation }) {
           {/* Stats */}
           <View style={styles.statsContent}>
             <Text style={styles.sectionTitle}>My Activity</Text>
-            
+
             <View style={styles.statsGrid}>
-              <View style={styles.statCard}>
+              <TouchableOpacity
+                style={styles.statCard}
+                onPress={() => navigation.navigate('ManageListings')}
+              >
                 <Package size={24} color="#1e293b" />
                 <Text style={styles.statValue}>{userData.totalListings}</Text>
                 <Text style={styles.statLabel}>My Listings</Text>
-              </View>
-              <View style={styles.statCard}>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.statCard}
+                onPress={() => navigation.navigate('ActiveStorage')}
+              >
                 <Calendar size={24} color="#1e293b" />
                 <Text style={styles.statValue}>{userData.upcomingBookings}</Text>
                 <Text style={styles.statLabel}>Active Storage</Text>
-              </View>
+              </TouchableOpacity>
             </View>
 
             <View style={styles.statsGrid}>
-              <View style={styles.statCard}>
+              <TouchableOpacity
+                style={styles.statCard}
+                onPress={() => navigation.navigate('History')}
+              >
                 <Calendar size={24} color="#1e293b" />
                 <Text style={styles.statValue}>{userData.storageHistory}</Text>
                 <Text style={styles.statLabel}>History</Text>
-              </View>
-              <View style={styles.statCard}>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.statCard}
+                onPress={() => navigation.navigate('Favorites')}
+              >
                 <Heart size={24} color="#1e293b" />
                 <Text style={styles.statValue}>{userData.favoriteListings}</Text>
                 <Text style={styles.statLabel}>Favorites</Text>
-              </View>
+              </TouchableOpacity>
             </View>
 
-            <TouchableOpacity style={styles.actionButton}>
+            <TouchableOpacity
+              style={styles.actionButton}
+              onPress={() => navigation.navigate('ManageListings')}
+            >
               <Text style={styles.actionButtonText}>Manage My Listings</Text>
               <ChevronRight size={20} color="#fff" />
             </TouchableOpacity>
