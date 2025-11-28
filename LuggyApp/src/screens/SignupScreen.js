@@ -24,17 +24,26 @@ export default function SignupScreen({ navigation }) {
     }
 
     setLoading(true);
-    const { error } = await signUp(email, password, name);
-    setLoading(false);
-
+    const { data, error } = await signUp(email, password, name);
+    
     if (error) {
+      setLoading(false);
       Alert.alert('Signup Failed', error.message);
     } else {
-      Alert.alert(
-        'Success!',
-        'Please check your email to verify your account',
-        [{ text: 'OK', onPress: () => navigation.goBack() }]
-      );
+      // If email confirmation is disabled, user will be auto-logged in
+      // If enabled, they need to verify email first
+      if (data?.session) {
+        // Auto-logged in - no need to do anything, AuthContext will handle navigation
+        setLoading(false);
+      } else {
+        // Email verification is enabled
+        setLoading(false);
+        Alert.alert(
+          'Success!',
+          'Please check your email to verify your account',
+          [{ text: 'OK', onPress: () => navigation.goBack() }]
+        );
+      }
     }
   };
 
