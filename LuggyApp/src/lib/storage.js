@@ -1,5 +1,7 @@
 import { supabase } from './supabase';
 import * as ImagePicker from 'expo-image-picker';
+import * as FileSystem from 'expo-file-system/legacy';
+import { decode } from 'base64-arraybuffer';
 
 /**
  * Upload an image to Supabase storage
@@ -17,14 +19,16 @@ export async function uploadImage(bucket, filePath, userId, fileName = null) {
         const finalFileName = fileName || `${timestamp}.${fileExt}`;
         const storagePath = `${userId}/${finalFileName}`;
 
-        // Fetch the image as a blob
-        const response = await fetch(filePath);
-        const blob = await response.blob();
+        // Read file as base64 and convert to ArrayBuffer
+        const base64 = await FileSystem.readAsStringAsync(filePath, {
+            encoding: 'base64',
+        });
+        const arrayBuffer = decode(base64);
 
-        // Upload to Supabase
+        // Upload to Supabase as ArrayBuffer (avoids Blob issues)
         const { data, error } = await supabase.storage
             .from(bucket)
-            .upload(storagePath, blob, {
+            .upload(storagePath, arrayBuffer, {
                 contentType: `image/${fileExt}`,
                 upsert: false
             });
@@ -78,7 +82,7 @@ export async function pickImage() {
     try {
         // Request permission
         const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-        
+
         if (status !== 'granted') {
             alert('Sorry, we need camera roll permissions to upload images!');
             return { uri: null, cancelled: true };

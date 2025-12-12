@@ -1,49 +1,59 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, SafeAreaView, Platform, StatusBar as RNStatusBar, Image, Alert } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { ArrowLeft, Edit, Pause, Play, MapPin, DollarSign, Calendar, Package } from 'lucide-react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import { useFocusEffect } from '@react-navigation/native';
+import { supabase } from '../lib/supabase';
+import { useAuth } from '../contexts/AuthContext';
 
 export default function ManageListingsScreen({ navigation }) {
-    // Mock data - replace with actual data from API/state management
-    const [listings, setListings] = useState([
-        {
-            id: 1,
-            title: 'Secure Student Locker',
-            location: 'Gangnam, Seoul',
-            price: '30000',
-            status: 'active',
-            availableFrom: '2024-12-01',
-            availableUntil: '2025-03-31',
-            photos: ['https://via.placeholder.com/300'],
-            amenities: ['24/7', 'secure'],
-            bookings: 2,
-        },
-        {
-            id: 2,
-            title: 'Cozy Storage Space',
-            location: 'Hongdae, Seoul',
-            price: '25000',
-            status: 'active',
-            availableFrom: '2024-11-15',
-            availableUntil: null,
-            photos: ['https://via.placeholder.com/300'],
-            amenities: ['climate', 'flexible'],
-            bookings: 1,
-        },
-        {
-            id: 3,
-            title: 'Campus Storage Room',
-            location: 'Sinchon, Seoul',
-            price: '35000',
-            status: 'paused',
-            availableFrom: '2024-12-10',
-            availableUntil: '2025-02-28',
-            photos: ['https://via.placeholder.com/300'],
-            amenities: ['24/7', 'secure', 'climate'],
-            bookings: 0,
-        },
-    ]);
+    const [listings, setListings] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
+    const { user } = useAuth();
+
+    const fetchListings = async () => {
+        try {
+            if (!user) return;
+            setIsLoading(true);
+
+            const { data, error } = await supabase
+                .from('storage_listings')
+                .select('*')
+                .eq('host_id', user.id)
+                .order('created_at', { ascending: false });
+
+            if (error) throw error;
+
+            // Map database columns to UI state
+            const formattedListings = data.map(item => ({
+                id: item.id,
+                title: item.title,
+                location: item.address,
+                price: item.price_per_day.toString(), // UI expects string for now
+                status: item.is_available ? 'active' : 'paused',
+                // Fallback for dates since they aren't in DB schema yet
+                availableFrom: 'Flexible',
+                availableUntil: null,
+                photos: item.images || [],
+                amenities: item.amenities || [],
+                bookings: item.total_bookings || 0,
+            }));
+
+            setListings(formattedListings);
+        } catch (error) {
+            console.error('Error fetching listings:', error);
+            Alert.alert('Error', 'Failed to load your listings');
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    useFocusEffect(
+        useCallback(() => {
+            fetchListings();
+        }, [user])
+    );
 
     const toggleListingStatus = (id) => {
         setListings(listings.map(listing => {
@@ -98,13 +108,13 @@ export default function ManageListingsScreen({ navigation }) {
 
                     <View style={styles.infoRow}>
                         <DollarSign size={14} color="#64748b" />
-                        <Text style={styles.infoText}>₩{listing.price}/month</Text>
+                        <Text style={styles.infoText}>₩{listing.price}/day</Text>
                     </View>
 
                     <View style={styles.infoRow}>
                         <Calendar size={14} color="#64748b" />
                         <Text style={styles.infoText}>
-                            {listing.availableFrom} - {listing.availableUntil || 'Flexible'}
+                            {listing.availableFrom}
                         </Text>
                     </View>
 

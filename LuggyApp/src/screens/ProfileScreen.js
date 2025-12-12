@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, ScrollView, TouchableOpacity, SafeAreaView, Sta
 import { StatusBar } from 'expo-status-bar';
 import { User, Settings, LogOut, ChevronRight, Package, Calendar, Heart, DollarSign, MessageSquare, Bell, Shield, HelpCircle, Info } from 'lucide-react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import { useAuth } from '../contexts/AuthContext';
 
 export default function ProfileScreen({ navigation }) {
   // Mock data
@@ -19,6 +20,13 @@ export default function ProfileScreen({ navigation }) {
     upcomingBookings: 1,
     favoriteListings: 12,
     totalSpent: 240000,
+  };
+
+  const { signOut } = useAuth();
+
+  const handleLogout = async () => {
+    await signOut();
+    // Navigation is handled automatically by AuthContext state change
   };
 
   const SettingsItem = ({ icon: Icon, title, onPress }) => (
@@ -115,7 +123,7 @@ export default function ProfileScreen({ navigation }) {
           </View>
 
           {/* Logout */}
-          <TouchableOpacity style={styles.logoutButton}>
+          <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
             <LogOut size={20} color="#ef4444" />
             <Text style={styles.logoutText}>Logout</Text>
           </TouchableOpacity>

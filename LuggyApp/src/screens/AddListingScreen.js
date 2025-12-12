@@ -5,6 +5,9 @@ import { ArrowLeft, ArrowRight, MapPin, DollarSign, Camera, Shield, Clock, Packa
 import { LinearGradient } from 'expo-linear-gradient';
 import * as ImagePicker from 'expo-image-picker';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import { createStorageListing } from '../lib/database';
+import { uploadListingImage } from '../lib/storage';
+import { useAuth } from '../contexts/AuthContext';
 
 const STEPS = [
   { id: 1, title: 'Basic Info', icon: Package },
@@ -40,6 +43,8 @@ export default function AddListingScreen({ navigation, route }) {
   });
   const [showStartDatePicker, setShowStartDatePicker] = useState(false);
   const [showEndDatePicker, setShowEndDatePicker] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const { user } = useAuth();
 
   const pickImage = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
@@ -74,13 +79,73 @@ export default function AddListingScreen({ navigation, route }) {
     }
   };
 
-  const handleSubmit = () => {
-    if (editMode) {
-      console.log('Updating listing:', { ...existingListing, ...formData });
-    } else {
-      console.log('Creating new listing:', formData);
+  const handleSubmit = async () => {
+    if (isLoading) return;
+
+    try {
+      setIsLoading(true);
+
+      // 1. Upload photos first
+      const uploadedImageUrls = [];
+      const photosToUpload = formData.photos;
+
+      for (const photo of photosToUpload) {
+        // If it's already a remote URL (edit mode), keep it
+        if (photo.uri.startsWith('http')) {
+          uploadedImageUrls.push(photo.uri);
+          continue;
+        }
+
+        const { url, error } = await uploadListingImage(user.id, photo.uri);
+        if (error) {
+          console.error('Error uploading image:', error);
+          // Continue with other images or abort? Let's continue for now but alert user might be good
+          continue;
+        }
+        if (url) {
+          uploadedImageUrls.push(url);
+        }
+      }
+
+      // 2. Prepare listing data
+      // NOTE: available_from/until not in current schema, adding to description for now
+      const dateDescription = `\n\nAvailable: ${formData.availableFrom.toLocaleDateString()} - ${formData.availableUntil ? formData.availableUntil.toLocaleDateString() : 'Flexible'}`;
+
+      const listingData = {
+        host_id: user.id,
+        title: formData.title,
+        description: formData.description + dateDescription,
+        address: formData.location, // Mapping 'location' input to 'address' column
+        price_per_day: parseFloat(formData.price) || 0,
+        amenities: formData.amenities,
+        images: uploadedImageUrls,
+        // available_from: formData.availableFrom.toISOString(), // Column missing in DB
+        // available_until: formData.availableUntil ? formData.availableUntil.toISOString() : null, // Column missing in DB
+        storage_type: [],
+        size_category: 'medium',
+        is_available: true,
+      };
+
+      // 3. Save to database
+      if (editMode && existingListing) {
+        // Handle update logic here if needed later
+        console.log('Update not fully implemented yet');
+      } else {
+        const { data, error } = await createStorageListing(listingData);
+
+        if (error) {
+          throw error;
+        }
+
+        alert('Success! Your listing has been published.');
+        navigation.goBack();
+      }
+    } catch (error) {
+      console.error('Error creating listing:', error);
+      alert('Failed to create listing: ' + error.message);
+    } finally {
+      setIsLoading(false);
     }
-    navigation.goBack();
   };
 
   const renderStepContent = () => {
@@ -343,7 +408,7 @@ export default function AddListingScreen({ navigation, route }) {
             </View>
             <View style={styles.reviewCard}>
               <Text style={styles.reviewLabel}>Price</Text>
-              <Text style={styles.reviewValue}>₩{formData.price || '0'}/month</Text>
+              <Text style={styles.reviewValue}>₩{formData.price || '0'}/day</Text>
             </View>
             <View style={styles.reviewCard}>
               <Text style={styles.reviewLabel}>Photos</Text>
@@ -420,7 +485,9 @@ export default function AddListingScreen({ navigation, route }) {
                 locations={[0, 0.29, 1]}
                 style={styles.nextButton}
               >
-                <Text style={styles.nextButtonText}>{editMode ? 'Update Listing' : 'Submit Listing'}</Text>
+                <Text style={styles.nextButtonText}>
+                  {isLoading ? 'Publishing...' : (editMode ? 'Update Listing' : 'Submit Listing')}
+                </Text>
                 <Check size={20} color="#fff" />
               </LinearGradient>
             </TouchableOpacity>

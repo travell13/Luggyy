@@ -1,5 +1,6 @@
 import React, { createContext, useState, useEffect, useContext } from 'react';
 import { supabase } from '../lib/supabase';
+import * as Linking from 'expo-linking';
 
 const AuthContext = createContext({});
 
@@ -26,6 +27,58 @@ export const AuthProvider = ({ children }) => {
         return () => subscription.unsubscribe();
     }, []);
 
+    // Handle Deep Links (Magic Links / Email Confirmation)
+    useEffect(() => {
+        // Log the redirect URL for the user to configure in Supabase
+        const redirectUrl = Linking.createURL('/auth/callback');
+        console.log('--------------------------------------------------');
+        console.log('PLEASE ADD THIS URL TO SUPABASE REDIRECT URLS:');
+        console.log(redirectUrl);
+        console.log('--------------------------------------------------');
+
+        const handleDeepLink = (event) => {
+            const url = event.url;
+            if (!url) return;
+
+            // Extract tokens from the URL fragment (Supabase sends #access_token=...&refresh_token=...)
+            // Example: luggyapp://auth/callback#access_token=...&refresh_token=...&...
+            if (url.includes('access_token') && url.includes('refresh_token')) {
+                const getParameterByName = (name, urlString) => {
+                    name = name.replace(/[\[\]]/g, '\\$&');
+                    const regex = new RegExp('[#&]' + name + '(=([^&#]*)|&|#|$)');
+                    const results = regex.exec(urlString);
+                    if (!results) return null;
+                    if (!results[2]) return '';
+                    return decodeURIComponent(results[2].replace(/\+/g, ' '));
+                };
+
+                const accessToken = getParameterByName('access_token', url);
+                const refreshToken = getParameterByName('refresh_token', url);
+
+                if (accessToken && refreshToken) {
+                    supabase.auth.setSession({
+                        access_token: accessToken,
+                        refresh_token: refreshToken,
+                    }).then(({ error }) => {
+                        if (error) console.error('Error setting session from deep link:', error);
+                    });
+                }
+            }
+        };
+
+        // Handle app launch from link
+        Linking.getInitialURL().then((url) => {
+            if (url) handleDeepLink({ url });
+        });
+
+        // Handle links while app is open
+        const subscription = Linking.addEventListener('url', handleDeepLink);
+
+        return () => {
+            subscription.remove();
+        };
+    }, []);
+
     const value = {
         user,
         session,
@@ -38,6 +91,7 @@ export const AuthProvider = ({ children }) => {
                     data: {
                         username,
                     },
+                    emailRedirectTo: Linking.createURL('/auth/callback'),
                 },
             });
             return { data, error };
